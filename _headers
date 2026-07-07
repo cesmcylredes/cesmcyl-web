@@ -1,0 +1,5 @@
+/noticias/*
+  Cache-Control: public, max-age=300
+
+/documentos/*
+  Cache-Control: public, max-age=300
