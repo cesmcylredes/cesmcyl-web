@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>CESMCYL — Panel de noticias</title>
+<style>
+  :root{
+    --green-dark:#1a3d2e; --green-pale:#eaf2ec; --gold:#e0a527; --gold-dark:#b8841a;
+    --off-white:#f7f6f3; --border:#e2ddd2; --stone:#8a8578; --white:#fff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--off-white); color:var(--green-dark); margin:0; padding:2rem 1rem;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  h1{font-size:1.5rem;margin-bottom:.25rem;}
+  .sub{color:var(--stone);font-size:.9rem;margin-bottom:2rem;}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.75rem;margin-bottom:1.25rem;}
+  label{display:block;font-weight:600;font-size:.85rem;margin-bottom:.35rem;margin-top:1.1rem;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=date], select, textarea{
+    width:100%;padding:.65rem .8rem;border:1px solid var(--border);border-radius:8px;
+    font-size:.95rem;font-family:inherit;background:var(--off-white);color:var(--green-dark);
+  }
+  textarea{min-height:140px;resize:vertical;}
+  .toolbar{display:flex;gap:.4rem;margin-bottom:.4rem;}
+  .fmt-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--off-white);color:var(--green-dark);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .fmt-btn:hover{background:var(--green-pale);border-color:var(--green-dark);}
+  .hint{font-size:.78rem;color:var(--stone);margin-top:.3rem;}
+  .checkbox-row{display:flex;align-items:center;gap:.5rem;margin-top:1.1rem;}
+  .checkbox-row input{width:auto;}
+  .checkbox-row label{margin:0;}
+  .fijo-extra{display:none;border-left:3px solid var(--gold);padding-left:1rem;margin-top:1rem;}
+  .fijo-extra.show{display:block;}
+  button{
+    background:var(--gold);color:var(--green-dark);border:none;border-radius:8px;
+    padding:.85rem 1.5rem;font-weight:700;font-size:.95rem;cursor:pointer;width:100%;margin-top:1.5rem;
+  }
+  button:hover{background:var(--gold-dark);color:var(--white);}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .msg{padding:.9rem 1rem;border-radius:8px;font-size:.88rem;margin-top:1rem;display:none;}
+  .msg.ok{background:var(--green-pale);color:var(--green-dark);display:block;}
+  .msg.err{background:#fce8e6;color:#a33;display:block;}
+  .token-box{background:#fff8e6;border:1px solid var(--gold);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.85rem;}
+  .token-box a{color:var(--gold-dark);}
+  small.req{color:#c0392b;}
+  .gestion-item{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--border);}
+  .gestion-item:last-child{border-bottom:none;}
+  .gestion-info{min-width:0;}
+  .gestion-info .fecha-pequena{font-size:.75rem;color:var(--stone);}
+  .gestion-info .titulo-pequeno{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .btn-eliminar{background:#fce8e6;color:#a33;border:1px solid #f0c4c0;border-radius:6px;padding:.4rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer;flex-shrink:0;width:auto;margin:0;}
+  .btn-eliminar:hover{background:#f5cbc7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📋 Panel de noticias CESMCYL</h1>
+  <p class="sub">Crea una noticia nueva sin tocar código. Se publica directamente en la web.</p>
+
+  <div class="token-box">
+    <strong>Clave de acceso</strong> — pégala aquí una vez, tu navegador la recordará.
+    <div class="hint">Si no la tienes, pídesela a quien administre la web.</div>
+    <input type="text" id="token" placeholder="Pega aquí la clave de acceso" style="margin-top:.6rem;">
+  </div>
+
+  <div class="card">
+    <div id="avisoEdicion" style="display:none;background:var(--green-pale);border-radius:8px;padding:.7rem 1rem;margin-bottom:1.2rem;font-size:.85rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+      <span>✏️ Editando: <strong id="tituloEdicion"></strong></span>
+      <button type="button" id="btnCancelarEdicion" style="width:auto;margin:0;padding:.35rem .8rem;background:var(--white);color:var(--green-dark);border:1px solid var(--border);font-size:.78rem;">Cancelar</button>
+    </div>
+
+    <label>Título <small class="req">*</small></label>
+    <input type="text" id="title" placeholder="Ej: Listados definitivos Bolsa de empleo...">
+
+    <label>Fecha <small class="req">*</small></label>
+    <input type="date" id="date">
+
+    <label>Categoría <small class="req">*</small></label>
+    <select id="category">
+      <option>OPE</option>
+      <option>Bolsa</option>
+      <option>CESM</option>
+      <option>Estatuto Marco</option>
+      <option>Fidelización</option>
+      <option>MIR 2026</option>
+      <option>Electoral 2026</option>
+      <option>Estabilización</option>
+      <option>Tutores</option>
+      <option>Inspección Sanitaria</option>
+      <option>Concurso de traslados</option>
+      <option>Novedades normativas estatales</option>
+      <option>Noticias</option>
+    </select>
+
+    <label>Imagen (opcional)</label>
+    <input type="file" id="image" accept="image/png,image/jpeg,image/webp">
+    <div class="hint">Se mostrará en la noticia destacada y en la tarjeta de la lista.</div>
+    <img id="imagePreview" style="display:none;max-width:100%;border-radius:8px;margin-top:.6rem;">
+
+    <label>Texto de la noticia <small class="req">*</small></label>
+    <div class="toolbar">
+      <button type="button" class="fmt-btn" id="btnBold" title="Negrita"><b>N</b></button>
+      <button type="button" class="fmt-btn" id="btnItalic" title="Cursiva"><i>C</i></button>
+    </div>
+    <textarea id="body" placeholder="Escribe aquí el contenido de la noticia..."></textarea>
+    <div class="hint">Selecciona una palabra o frase y pulsa N o C para darle formato.</div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="pinned">
+      <label for="pinned" style="margin:0;">Fijar en "Destacado" (arriba del todo, en el Tablón)</label>
+    </div>
+
+    <div class="fijo-extra" id="fijoExtra">
+      <label>Descripción corta (opcional)</label>
+      <input type="text" id="description" placeholder="Frase corta bajo el título">
+      <label>Enlace (PDF u otra página, opcional)</label>
+      <input type="text" id="url" placeholder="https://...">
+      <label>Texto del botón</label>
+      <input type="text" id="cta" placeholder="Ej: Descargar programa" value="Ver más">
+    </div>
+
+    <button id="btnPublicar">Publicar noticia</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <p class="hint" style="text-align:center;">
+    La noticia tarda 1-2 minutos en aparecer en la web tras publicarse.
+  </p>
+
+  <div class="card" style="margin-top:2.5rem;">
+    <h2 style="font-size:1.1rem;margin:0 0 .25rem;">Noticias publicadas</h2>
+    <p class="sub" style="margin-bottom:1.2rem;">Pulsa eliminar para quitar una noticia de la web.</p>
+    <div id="listaGestion"><p class="hint">Cargando noticias...</p></div>
+  </div>
+</div>
+
+<script>
+const REPO = 'cesmcylredes/cesmcyl-web';
+const BRANCH = 'main';
+
+// Recordar el token en este navegador para no tener que pegarlo cada vez
+const tokenInput = document.getElementById('token');
+tokenInput.value = localStorage.getItem('cesmcyl-token') || '';
+tokenInput.addEventListener('input', () => {
+  localStorage.setItem('cesmcyl-token', tokenInput.value.trim());
+});
+
+// Mostrar/ocultar campos extra de "Destacado"
+const pinnedCheckbox = document.getElementById('pinned');
+const fijoExtra = document.getElementById('fijoExtra');
+pinnedCheckbox.addEventListener('change', () => {
+  fijoExtra.classList.toggle('show', pinnedCheckbox.checked);
+});
+
+// Fecha de hoy por defecto
+document.getElementById('date').valueAsDate = new Date();
+
+// Vista previa de la imagen seleccionada
+const imageInput = document.getElementById('image');
+const imagePreview = document.getElementById('imagePreview');
+imageInput.addEventListener('change', () => {
+  const archivo = imageInput.files[0];
+  if (!archivo) { imagePreview.style.display = 'none'; return; }
+  const lector = new FileReader();
+  lector.onload = (e) => {
+    imagePreview.src = e.target.result;
+    imagePreview.style.display = 'block';
+  };
+  lector.readAsDataURL(archivo);
+});
+
+// Botones de formato (negrita / cursiva) sobre el texto seleccionado
+function aplicarFormato(marca) {
+  const textarea = document.getElementById('body');
+  const inicio = textarea.selectionStart;
+  const fin = textarea.selectionEnd;
+  const texto = textarea.value;
+  const seleccion = texto.substring(inicio, fin) || 'texto';
+
+  const nuevoTexto = texto.substring(0, inicio) + marca + seleccion + marca + texto.substring(fin);
+  textarea.value = nuevoTexto;
+
+  // Volver a seleccionar el texto recién formateado, para poder seguir escribiendo
+  textarea.focus();
+  textarea.selectionStart = inicio + marca.length;
+  textarea.selectionEnd = inicio + marca.length + seleccion.length;
+}
+
+document.getElementById('btnBold').addEventListener('click', () => aplicarFormato('**'));
+document.getElementById('btnItalic').addEventListener('click', () => aplicarFormato('*'));
+
+function slugify(texto) {
+  return texto
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar acentos
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 60);
+}
+
+function escaparComillas(texto) {
+  return (texto || '').replace(/"/g, '\\"');
+}
+
+function leerArchivoComoBase64(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader();
+    lector.onload = () => {
+      // FileReader da "data:image/png;base64,AAAA..." — solo nos interesa la parte tras la coma
+      resolve(lector.result.split(',')[1]);
+    };
+    lector.onerror = reject;
+    lector.readAsDataURL(archivo);
+  });
+}
+
+document.getElementById('btnPublicar').addEventListener('click', async () => {
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('btnPublicar');
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  const token = tokenInput.value.trim();
+  const title = document.getElementById('title').value.trim();
+  const date = document.getElementById('date').value;
+  const category = document.getElementById('category').value;
+  const body = document.getElementById('body').value.trim();
+  const pinned = pinnedCheckbox.checked;
+  const description = document.getElementById('description').value.trim();
+  const url = document.getElementById('url').value.trim();
+  const cta = document.getElementById('cta').value.trim();
+  const archivoImagen = imageInput.files[0];
+
+  if (!token) { msg.className = 'msg err'; msg.textContent = 'Falta la clave de acceso.'; return; }
+  if (!title || !date || !body) { msg.className = 'msg err'; msg.textContent = 'Título, fecha y texto son obligatorios.'; return; }
+
+  const slug = slugify(title);
+  // En modo edición, mantenemos el nombre de archivo original (no lo regeneramos
+  // aunque cambien el título/fecha), así no se duplica la noticia.
+  const filename = archivoEnEdicion || `${date}-${slug || 'noticia'}.md`;
+  const esEdicion = !!archivoEnEdicion;
+
+  btn.disabled = true;
+  btn.textContent = esEdicion ? 'Guardando...' : 'Publicando...';
+
+  try {
+    let imagePath = '';
+
+    // 1) Si hay imagen nueva, subirla primero a noticias/imagenes/
+    if (archivoImagen) {
+      btn.textContent = 'Subiendo imagen...';
+      const extension = archivoImagen.name.split('.').pop().toLowerCase();
+      const imageFilename = `${date}-${slug || 'noticia'}.${extension}`;
+      const imageBase64 = await leerArchivoComoBase64(archivoImagen);
+
+      const resImagen = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/imagenes/${imageFilename}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `Imagen para noticia: ${title}`,
+          content: imageBase64,
+          branch: BRANCH
+        })
+      });
+
+      if (!resImagen.ok) {
+        const dataImg = await resImagen.json().catch(() => ({}));
+        throw new Error('No se pudo subir la imagen: ' + (dataImg.message || resImagen.status));
+      }
+
+      imagePath = `/noticias/imagenes/${imageFilename}`;
+    }
+
+    // 2) Crear o actualizar el archivo .md de la noticia
+    btn.textContent = esEdicion ? 'Guardando cambios...' : 'Publicando noticia...';
+    let frontmatter = `---\ntitle: "${escaparComillas(title)}"\ndate: "${date}"\ncategory: "${category}"\npinned: ${pinned}\n`;
+    if (imagePath) frontmatter += `image: "${imagePath}"\n`;
+    if (pinned) {
+      if (description) frontmatter += `description: "${escaparComillas(description)}"\n`;
+      if (url) frontmatter += `url: "${escaparComillas(url)}"\n`;
+      if (cta) frontmatter += `cta: "${escaparComillas(cta)}"\n`;
+    }
+    frontmatter += `---\n${body}\n`;
+
+    const contenidoBase64 = btoa(unescape(encodeURIComponent(frontmatter)));
+
+    // Si estamos editando, GitHub exige el "sha" del archivo actual para
+    // permitir sobrescribirlo (evita que dos personas se pisen sin darse cuenta).
+    let shaActual = undefined;
+    if (esEdicion) {
+      const resInfo = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/${filename}?ref=${BRANCH}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+      });
+      if (resInfo.ok) {
+        const info = await resInfo.json();
+        shaActual = info.sha;
+      }
+    }
+
+    const cuerpoPeticion = {
+      message: esEdicion ? `Editar noticia: ${title}` : `Nueva noticia: ${title}`,
+      content: contenidoBase64,
+      branch: BRANCH
+    };
+    if (shaActual) cuerpoPeticion.sha = shaActual;
+
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/${filename}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(cuerpoPeticion)
+    });
+
+    if (res.ok) {
+      msg.className = 'msg ok';
+      msg.textContent = esEdicion
+        ? '✅ Cambios guardados. Tardará 1-2 minutos en verse en la web.'
+        : '✅ Noticia publicada. Tardará 1-2 minutos en verse en la web.';
+      document.getElementById('title').value = '';
+      document.getElementById('body').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('url').value = '';
+      imageInput.value = '';
+      imagePreview.style.display = 'none';
+      pinnedCheckbox.checked = false;
+      fijoExtra.classList.remove('show');
+      document.getElementById('avisoEdicion').style.display = 'none';
+      archivoEnEdicion = null;
+      btn.textContent = 'Publicar noticia';
+      cargarListaGestion();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        msg.className = 'msg err';
+        msg.textContent = '❌ La clave de acceso no es válida.';
+      } else if (res.status === 422) {
+        msg.className = 'msg err';
+        msg.textContent = '❌ Ya existe una noticia con ese mismo nombre de archivo (título + fecha). Cambia ligeramente el título o la fecha.';
+      } else {
+        msg.className = 'msg err';
+        msg.textContent = '❌ Error al publicar: ' + (data.message || res.status);
+      }
+    }
+  } catch (e) {
+    msg.className = 'msg err';
+    msg.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publicar noticia';
+  }
+});
+
+// --- Gestión de noticias existentes (listar + eliminar) ---
+
+async function cargarListaGestion() {
+  const cont = document.getElementById('listaGestion');
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias?ref=${BRANCH}`);
+    if (!res.ok) throw new Error('No se pudo obtener el listado');
+    const listado = await res.json();
+    const archivos = listado
+      .filter(item => item.type === 'file' && item.name.endsWith('.md') && !item.name.startsWith('_'))
+      .map(item => item.name)
+      .sort((a, b) => b.localeCompare(a)); // más recientes primero (el nombre empieza por fecha)
+
+    if (archivos.length === 0) {
+      cont.innerHTML = '<p class="hint">No hay noticias publicadas.</p>';
+      return;
+    }
+
+    cont.innerHTML = '';
+    for (const archivo of archivos) {
+      let meta = { title: archivo, date: '', category: 'Noticias', pinned: false, body: '', image: '', description: '', url: '', cta: '' };
+      try {
+        const resArchivo = await fetch(`/noticias/${archivo}`);
+        if (resArchivo.ok) {
+          const texto = await resArchivo.text();
+          const match = texto.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+          if (match) {
+            match[1].split('\n').forEach(linea => {
+              const [clave, ...valor] = linea.split(':');
+              if (clave && valor.length) {
+                meta[clave.trim()] = valor.join(':').trim().replace(/^"|"$/g, '');
+              }
+            });
+            meta.body = match[2].trim();
+          }
+        }
+      } catch (e) { /* si falla, mostramos el nombre del archivo tal cual */ }
+
+      const div = document.createElement('div');
+      div.className = 'gestion-item';
+      div.innerHTML = `
+        <div class="gestion-info">
+          <div class="fecha-pequena">${meta.date}</div>
+          <div class="titulo-pequeno">${meta.title}</div>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-shrink:0;">
+          <button class="btn-editar" style="background:var(--green-pale);color:var(--green-dark);border:1px solid var(--border);border-radius:6px;padding:.4rem .8rem;font-size:.8rem;font-weight:600;cursor:pointer;width:auto;margin:0;">Editar</button>
+          <button class="btn-eliminar" data-titulo="${meta.title.replace(/"/g, '&quot;')}">Eliminar</button>
+        </div>
+      `;
+      div.querySelector('.btn-eliminar').dataset.archivo = archivo;
+      div.querySelector('.btn-editar').addEventListener('click', () => cargarNoticiaEnFormulario(archivo, meta));
+      cont.appendChild(div);
+    }
+
+    cont.querySelectorAll('.btn-eliminar').forEach(boton => {
+      boton.addEventListener('click', () => eliminarNoticia(boton.dataset.archivo, boton.dataset.titulo, boton));
+    });
+  } catch (e) {
+    cont.innerHTML = '<p class="hint">No se pudo cargar el listado de noticias.</p>';
+  }
+}
+
+// --- Edición de una noticia existente ---
+let archivoEnEdicion = null;
+
+function cargarNoticiaEnFormulario(archivo, meta) {
+  archivoEnEdicion = archivo;
+
+  document.getElementById('title').value = meta.title || '';
+  document.getElementById('date').value = meta.date || '';
+  document.getElementById('category').value = meta.category || 'Noticias';
+  document.getElementById('body').value = meta.body || '';
+  document.getElementById('description').value = meta.description || '';
+  document.getElementById('url').value = meta.url || '';
+  document.getElementById('cta').value = meta.cta || 'Ver más';
+
+  const pinned = String(meta.pinned).toLowerCase() === 'true';
+  pinnedCheckbox.checked = pinned;
+  fijoExtra.classList.toggle('show', pinned);
+
+  document.getElementById('avisoEdicion').style.display = 'flex';
+  document.getElementById('tituloEdicion').textContent = meta.title || archivo;
+  document.getElementById('btnPublicar').textContent = 'Guardar cambios';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('btnCancelarEdicion').addEventListener('click', () => {
+  archivoEnEdicion = null;
+  document.getElementById('title').value = '';
+  document.getElementById('body').value = '';
+  document.getElementById('description').value = '';
+  document.getElementById('url').value = '';
+  document.getElementById('date').valueAsDate = new Date();
+  pinnedCheckbox.checked = false;
+  fijoExtra.classList.remove('show');
+  document.getElementById('avisoEdicion').style.display = 'none';
+  document.getElementById('btnPublicar').textContent = 'Publicar noticia';
+});
+
+async function eliminarNoticia(archivo, titulo, boton) {
+  const token = tokenInput.value.trim();
+  if (!token) {
+    alert('Pega primero la clave de acceso arriba para poder eliminar noticias.');
+    return;
+  }
+
+  const confirmado = confirm(`¿Seguro que quieres eliminar la noticia "${titulo}"?\n\nEsta acción no se puede deshacer.`);
+  if (!confirmado) return;
+
+  boton.disabled = true;
+  boton.textContent = 'Eliminando...';
+
+  try {
+    // Hace falta el sha actual del archivo para poder borrarlo en GitHub
+    const resInfo = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/${archivo}?ref=${BRANCH}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (!resInfo.ok) throw new Error('No se pudo localizar el archivo en GitHub');
+    const info = await resInfo.json();
+
+    const resDelete = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/${archivo}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Eliminar noticia: ${titulo}`,
+        sha: info.sha,
+        branch: BRANCH
+      })
+    });
+
+    if (resDelete.ok) {
+      boton.closest('.gestion-item').remove();
+    } else {
+      const data = await resDelete.json().catch(() => ({}));
+      alert('No se pudo eliminar: ' + (data.message || resDelete.status));
+      boton.disabled = false;
+      boton.textContent = 'Eliminar';
+    }
+  } catch (e) {
+    alert('Error al eliminar: ' + e.message);
+    boton.disabled = false;
+    boton.textContent = 'Eliminar';
+  }
+}
+
+cargarListaGestion();
+</script>
+</body>
+</html>
