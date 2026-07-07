@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>CESMCYL — Panel de noticias</title>
+<style>
+  :root{
+    --green-dark:#1a3d2e; --green-pale:#eaf2ec; --gold:#e0a527; --gold-dark:#b8841a;
+    --off-white:#f7f6f3; --border:#e2ddd2; --stone:#8a8578; --white:#fff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background:var(--off-white); color:var(--green-dark); margin:0; padding:2rem 1rem;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  h1{font-size:1.5rem;margin-bottom:.25rem;}
+  .sub{color:var(--stone);font-size:.9rem;margin-bottom:2rem;}
+  .card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.75rem;margin-bottom:1.25rem;}
+  label{display:block;font-weight:600;font-size:.85rem;margin-bottom:.35rem;margin-top:1.1rem;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=date], select, textarea{
+    width:100%;padding:.65rem .8rem;border:1px solid var(--border);border-radius:8px;
+    font-size:.95rem;font-family:inherit;background:var(--off-white);color:var(--green-dark);
+  }
+  textarea{min-height:140px;resize:vertical;}
+  .hint{font-size:.78rem;color:var(--stone);margin-top:.3rem;}
+  .checkbox-row{display:flex;align-items:center;gap:.5rem;margin-top:1.1rem;}
+  .checkbox-row input{width:auto;}
+  .checkbox-row label{margin:0;}
+  .fijo-extra{display:none;border-left:3px solid var(--gold);padding-left:1rem;margin-top:1rem;}
+  .fijo-extra.show{display:block;}
+  button{
+    background:var(--gold);color:var(--green-dark);border:none;border-radius:8px;
+    padding:.85rem 1.5rem;font-weight:700;font-size:.95rem;cursor:pointer;width:100%;margin-top:1.5rem;
+  }
+  button:hover{background:var(--gold-dark);color:var(--white);}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .msg{padding:.9rem 1rem;border-radius:8px;font-size:.88rem;margin-top:1rem;display:none;}
+  .msg.ok{background:var(--green-pale);color:var(--green-dark);display:block;}
+  .msg.err{background:#fce8e6;color:#a33;display:block;}
+  .token-box{background:#fff8e6;border:1px solid var(--gold);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:.85rem;}
+  .token-box a{color:var(--gold-dark);}
+  small.req{color:#c0392b;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📋 Panel de noticias CESMCYL</h1>
+  <p class="sub">Crea una noticia nueva sin tocar código. Se publica directamente en la web.</p>
+
+  <div class="token-box">
+    <strong>Clave de acceso</strong> — pégala aquí una vez, tu navegador la recordará.
+    <div class="hint">Si no la tienes, pídesela a quien administre la web.</div>
+    <input type="text" id="token" placeholder="Pega aquí la clave de acceso" style="margin-top:.6rem;">
+  </div>
+
+  <div class="card">
+    <label>Título <small class="req">*</small></label>
+    <input type="text" id="title" placeholder="Ej: Listados definitivos Bolsa de empleo...">
+
+    <label>Fecha <small class="req">*</small></label>
+    <input type="date" id="date">
+
+    <label>Categoría <small class="req">*</small></label>
+    <select id="category">
+      <option>OPE</option>
+      <option>Bolsa</option>
+      <option>CESM</option>
+      <option>Estatuto Marco</option>
+      <option>Fidelización</option>
+      <option>MIR 2026</option>
+      <option>Electoral 2026</option>
+      <option>Estabilización</option>
+      <option>Tutores</option>
+      <option>Inspección Sanitaria</option>
+      <option>Concurso de traslados</option>
+      <option>Novedades normativas estatales</option>
+      <option>Noticias</option>
+    </select>
+
+    <label>Texto de la noticia <small class="req">*</small></label>
+    <textarea id="body" placeholder="Escribe aquí el contenido de la noticia..."></textarea>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="pinned">
+      <label for="pinned" style="margin:0;">Fijar en "Destacado" (arriba del todo, en el Tablón)</label>
+    </div>
+
+    <div class="fijo-extra" id="fijoExtra">
+      <label>Descripción corta (opcional)</label>
+      <input type="text" id="description" placeholder="Frase corta bajo el título">
+      <label>Enlace (PDF u otra página, opcional)</label>
+      <input type="text" id="url" placeholder="https://...">
+      <label>Texto del botón</label>
+      <input type="text" id="cta" placeholder="Ej: Descargar programa" value="Ver más">
+    </div>
+
+    <button id="btnPublicar">Publicar noticia</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <p class="hint" style="text-align:center;">
+    La noticia tarda 1-2 minutos en aparecer en la web tras publicarse.
+  </p>
+</div>
+
+<script>
+const REPO = 'cesmcylredes/cesmcyl-web';
+const BRANCH = 'main';
+
+// Recordar el token en este navegador para no tener que pegarlo cada vez
+const tokenInput = document.getElementById('token');
+tokenInput.value = localStorage.getItem('cesmcyl-token') || '';
+tokenInput.addEventListener('input', () => {
+  localStorage.setItem('cesmcyl-token', tokenInput.value.trim());
+});
+
+// Mostrar/ocultar campos extra de "Destacado"
+const pinnedCheckbox = document.getElementById('pinned');
+const fijoExtra = document.getElementById('fijoExtra');
+pinnedCheckbox.addEventListener('change', () => {
+  fijoExtra.classList.toggle('show', pinnedCheckbox.checked);
+});
+
+// Fecha de hoy por defecto
+document.getElementById('date').valueAsDate = new Date();
+
+function slugify(texto) {
+  return texto
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar acentos
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 60);
+}
+
+function escaparComillas(texto) {
+  return (texto || '').replace(/"/g, '\\"');
+}
+
+document.getElementById('btnPublicar').addEventListener('click', async () => {
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('btnPublicar');
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  const token = tokenInput.value.trim();
+  const title = document.getElementById('title').value.trim();
+  const date = document.getElementById('date').value;
+  const category = document.getElementById('category').value;
+  const body = document.getElementById('body').value.trim();
+  const pinned = pinnedCheckbox.checked;
+  const description = document.getElementById('description').value.trim();
+  const url = document.getElementById('url').value.trim();
+  const cta = document.getElementById('cta').value.trim();
+
+  if (!token) { msg.className = 'msg err'; msg.textContent = 'Falta la clave de acceso.'; return; }
+  if (!title || !date || !body) { msg.className = 'msg err'; msg.textContent = 'Título, fecha y texto son obligatorios.'; return; }
+
+  const slug = slugify(title);
+  const filename = `${date}-${slug || 'noticia'}.md`;
+
+  let frontmatter = `---\ntitle: "${escaparComillas(title)}"\ndate: "${date}"\ncategory: "${category}"\npinned: ${pinned}\n`;
+  if (pinned) {
+    if (description) frontmatter += `description: "${escaparComillas(description)}"\n`;
+    if (url) frontmatter += `url: "${escaparComillas(url)}"\n`;
+    if (cta) frontmatter += `cta: "${escaparComillas(cta)}"\n`;
+  }
+  frontmatter += `---\n${body}\n`;
+
+  const contenidoBase64 = btoa(unescape(encodeURIComponent(frontmatter)));
+
+  btn.disabled = true;
+  btn.textContent = 'Publicando...';
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/${filename}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Nueva noticia: ${title}`,
+        content: contenidoBase64,
+        branch: BRANCH
+      })
+    });
+
+    if (res.ok) {
+      msg.className = 'msg ok';
+      msg.textContent = '✅ Noticia publicada. Tardará 1-2 minutos en verse en la web.';
+      document.getElementById('title').value = '';
+      document.getElementById('body').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('url').value = '';
+      pinnedCheckbox.checked = false;
+      fijoExtra.classList.remove('show');
+    } else {
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        msg.className = 'msg err';
+        msg.textContent = '❌ La clave de acceso no es válida.';
+      } else if (res.status === 422) {
+        msg.className = 'msg err';
+        msg.textContent = '❌ Ya existe una noticia con ese mismo nombre de archivo (título + fecha). Cambia ligeramente el título o la fecha.';
+      } else {
+        msg.className = 'msg err';
+        msg.textContent = '❌ Error al publicar: ' + (data.message || res.status);
+      }
+    }
+  } catch (e) {
+    msg.className = 'msg err';
+    msg.textContent = '❌ Error de conexión: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publicar noticia';
+  }
+});
+</script>
+</body>
+</html>
