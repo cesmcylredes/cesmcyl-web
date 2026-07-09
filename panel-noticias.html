@@ -207,6 +207,36 @@ function escaparComillas(texto) {
   return (texto || '').replace(/"/g, '\\"');
 }
 
+// Rellena la plantilla de página de noticia con los datos concretos,
+// para generar un archivo .html real y propio para cada noticia.
+function generarPaginaHtml(plantilla, datos) {
+  const parrafos = (datos.body || '')
+    .split(/\n\s*\n/)
+    .map(p => p.trim())
+    .filter(Boolean)
+    .map(p => `<p>${escaparHtml(p).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>')}</p>`)
+    .join('\n      ');
+
+  const imagenHtml = datos.imagePath ? `<img src="${datos.imagePath}" alt="">` : '';
+  const urlPagina = `https://cesmcyl-web.pages.dev/noticias/paginas/${datos.slug}.html`;
+
+  return plantilla
+    .replaceAll('{{TITULO}}', escaparHtml(datos.title))
+    .replaceAll('{{TITULO_CODIFICADO}}', encodeURIComponent(datos.title))
+    .replaceAll('{{CATEGORIA}}', escaparHtml(datos.category))
+    .replaceAll('{{FECHA}}', datos.date)
+    .replaceAll('{{PARRAFOS}}', parrafos)
+    .replaceAll('{{IMAGEN_HTML}}', imagenHtml)
+    .replaceAll('{{URL_CODIFICADA}}', encodeURIComponent(urlPagina));
+}
+
+function escaparHtml(texto) {
+  return (texto || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function leerArchivoComoBase64(archivo) {
   return new Promise((resolve, reject) => {
     const lector = new FileReader();
@@ -324,6 +354,52 @@ document.getElementById('btnPublicar').addEventListener('click', async () => {
     });
 
     if (res.ok) {
+      // 3) Generar y subir la página HTML real de la noticia
+      btn.textContent = esEdicion ? 'Generando página...' : 'Generando página...';
+      try {
+        const resPlantilla = await fetch('/plantilla-noticia.html');
+        if (resPlantilla.ok) {
+          const plantilla = await resPlantilla.text();
+          const htmlPagina = generarPaginaHtml(plantilla, {
+            title, category, date, body,
+            imagePath: imagePath || '',
+            slug: filename.replace(/\.md$/, '')
+          });
+          const htmlBase64 = btoa(unescape(encodeURIComponent(htmlPagina)));
+          const nombrePagina = filename.replace(/\.md$/, '.html');
+
+          // Si ya existe (edición), hace falta su sha para poder sobrescribirla
+          let shaPagina = undefined;
+          const resInfoPagina = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/paginas/${nombrePagina}?ref=${BRANCH}`, {
+            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+          });
+          if (resInfoPagina.ok) {
+            const infoPagina = await resInfoPagina.json();
+            shaPagina = infoPagina.sha;
+          }
+
+          const cuerpoPagina = {
+            message: `Página HTML de noticia: ${title}`,
+            content: htmlBase64,
+            branch: BRANCH
+          };
+          if (shaPagina) cuerpoPagina.sha = shaPagina;
+
+          await fetch(`https://api.github.com/repos/${REPO}/contents/noticias/paginas/${nombrePagina}`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cuerpoPagina)
+          });
+        }
+      } catch (eHtml) {
+        console.log('No se pudo generar la página HTML de la noticia', eHtml);
+        // No bloqueamos la publicación por esto: el .md ya se guardó bien
+      }
+
       msg.className = 'msg ok';
       msg.textContent = esEdicion
         ? '✅ Cambios guardados. Tardará 1-2 minutos en verse en la web.'

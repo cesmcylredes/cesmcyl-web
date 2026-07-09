@@ -632,10 +632,16 @@ function slugDeNoticia(noticia) {
   return (noticia.archivo || '').replace(/\.md$/, '');
 }
 
+// Cada noticia tiene su propia página HTML real (generada por el panel al
+// publicarla), en vez de ser una sección que cambia por JavaScript.
+function urlDeNoticia(noticia) {
+  return '/noticias/paginas/' + slugDeNoticia(noticia) + '.html';
+}
+
 function crearBurbujaNoticia(noticia) {
   const a = document.createElement('a');
   a.className = 'noticia-burbuja';
-  a.href = '#noticia/' + slugDeNoticia(noticia);
+  a.href = urlDeNoticia(noticia);
   a.innerHTML = `
     <div class="noticia-burbuja-body">
       <div>
@@ -788,7 +794,7 @@ function pintarNoticiaDetalle(slug) {
     relacionadas.forEach(n => {
       const a = document.createElement('a');
       a.className = 'relacionada-card';
-      a.href = '#noticia/' + slugDeNoticia(n);
+      a.href = urlDeNoticia(n);
       a.innerHTML = `
         <span class="tag-small">${n.category || 'Noticia'}</span>
         <h4>${n.title || ''}</h4>
@@ -842,7 +848,7 @@ function pintarTablon(noticias) {
   normales.slice(0, 3).forEach(n => {
     const a = document.createElement('a');
     a.className = 'tablon-item';
-    a.href = '#noticia/' + slugDeNoticia(n);
+    a.href = urlDeNoticia(n);
     a.innerHTML = `
       <div class="tablon-item-header">
         <span class="tablon-tag${n.category === 'CESM' ? ' verde' : ''}">${n.category || 'Noticia'}</span>
