@@ -87,17 +87,18 @@ body{font-family:var(--sans);color:var(--text);background:var(--white);line-heig
 .relacionada-card .fecha{font-size:.7rem;color:var(--stone);}
 
 /* FOOTER */
-footer{background:white;color:var(--stone);padding:3.5rem 5% 0;}
-.footer-inner{max-width:1280px;margin:0 auto;}
-.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:2.5rem;}
-.footer-brand img{height:100px;width:auto;margin-bottom:1rem;}
+footer{background:white;color:var(--stone);}
+.footer-inner{max-width:1280px;margin:0 auto;padding:2.2rem 5% 0;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem 3.5rem;padding-bottom:1.2rem;}
+.footer-brand img{height:100px;width:auto;margin-bottom:.3rem;}
 .footer-brand p{font-size:.85rem;color:var(--stone);line-height:1.7;}
 .fcol h4{color:var(--green-dark);font-size:.9rem;margin-bottom:1rem;letter-spacing:.05em;text-transform:uppercase;}
 .fcol ul{list-style:none;}
 .fcol li{margin-bottom:.6rem;}
 .fcol a{color:var(--stone);text-decoration:none;font-size:.88rem;transition:color .2s;}
 .fcol a:hover{color:var(--gold-dark);}
-.footer-bottom{background:var(--green-dark);color:rgba(255,255,255,.65);display:flex;justify-content:space-between;padding:1.2rem 5%;margin:0 -5%;font-size:.78rem;flex-wrap:wrap;gap:.8rem;}
+.footer-bottom{background:var(--green-dark);}
+.footer-bottom-inner{max-width:1280px;margin:0 auto;padding:1rem 5%;color:rgba(255,255,255,.65);display:flex;justify-content:space-between;align-items:center;font-size:.78rem;flex-wrap:wrap;gap:.8rem;}
 .footer-bottom a{color:var(--gold);}
 @media(max-width:768px){.footer-grid{grid-template-columns:1fr;}}
 </style>
@@ -223,7 +224,9 @@ footer{background:white;color:var(--stone);padding:3.5rem 5% 0;}
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
       <span>© 2026 CESMCYL · Confederación Española de Sindicatos Médicos CYL</span>
       <span><a href="/index.html">Aviso legal</a> · <a href="/index.html">Privacidad</a> · <a href="/index.html">Cookies</a></span>
     </div>
