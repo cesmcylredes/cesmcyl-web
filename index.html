@@ -99,13 +99,13 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
     rgba(12,51,22,0.50) 70%,
     rgba(12,51,22,0.20) 100%);
 }
-.hero-inner{max-width:1280px;margin:0 auto;padding:4rem 5% 3rem;display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start;position:relative;z-index:1;}
-.hero-content{min-width:0;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;background:rgba(233,169,74,.15);border:1px solid rgba(233,169,74,.35);color:var(--gold);padding:.4rem 1rem;border-radius:50px;font-size:.92rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin-bottom:1.5rem;}
-.hero-title{font-family:"Lato",sans-serif;font-size:clamp(2.5rem,4.5vw,4rem);color:white;line-height:1.1;margin-bottom:2rem;font-weight:900;letter-spacing:-.01em;}
+.hero-inner{max-width:1280px;margin:0 auto;padding:4rem 5% 3rem;display:grid;grid-template-columns:1fr 380px;gap:6rem;align-items:stretch;position:relative;z-index:1;}
+.hero-content{min-width:0;display:flex;flex-direction:column;height:100%;justify-content:space-between;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;background:rgba(233,169,74,.15);border:1px solid rgba(233,169,74,.35);color:var(--gold);padding:.4rem 1rem;border-radius:50px;font-size:.92rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;}
+.hero-title{font-family:"Lato",sans-serif;font-size:clamp(2.5rem,4.5vw,4rem);color:white;line-height:1.1;font-weight:900;letter-spacing:-.01em;}
 .hero-title span{color:var(--gold);}
 
-.hero-desc{color:rgba(255,255,255,.9);font-size:1rem;line-height:1.8;margin-bottom:1rem;}
+.hero-desc{color:rgba(255,255,255,.9);font-size:1rem;line-height:1.8;}
 .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
 .btn-gold{background:var(--gold);color:var(--green-dark);padding:.9rem 2rem;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;border-radius:5px;transition:all .25s;display:inline-block;box-shadow:0 4px 15px rgba(233,169,74,.35);}
 .btn-gold:hover{background:#f0b955;transform:translateY(-2px);box-shadow:0 8px 22px rgba(233,169,74,.45);}
@@ -137,7 +137,7 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
 .tablon-desc{font-size:.7rem;color:rgba(255,255,255,.85);margin-top:.25rem;}
 .tablon-cta{font-size:.65rem;color:var(--gold);font-weight:700;margin-top:.3rem;}
 .tablon-subtitle{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:.5rem 0 .6rem;padding-top:.6rem;border-top:1px solid rgba(255,255,255,.15);}
-.tablon-ver-mas{display:flex;align-items:center;justify-content:center;gap:.7rem;text-align:center;color:var(--green-dark);font-size:.85rem;font-weight:700;letter-spacing:.04em;text-decoration:none;margin-top:.6rem;padding:.8rem;background:var(--gold);border-radius:8px;transition:background .2s;}
+.tablon-ver-mas{display:flex;align-items:center;justify-content:center;gap:.7rem;text-align:center;color:var(--green-dark);font-size:.85rem;font-weight:700;letter-spacing:.04em;text-decoration:none;padding:.8rem;background:var(--gold);border-radius:8px;transition:background .2s;}
 .tablon-ver-mas:hover{background:#f0b955;}
 .tablon-header{display:flex;align-items:center;gap:.5rem;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:3px solid var(--gold);}
 .tablon-header svg{stroke:var(--gold);}
@@ -147,7 +147,7 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
 .tablon-divider{display:flex;align-items:center;gap:.5rem;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700;margin:.6rem 0 .6rem;padding-top:.6rem;border-top:1px solid rgba(255,255,255,.15);}
 .tablon-divider svg{stroke:rgba(255,255,255,.45);}
 .hero-card{display:none;}
-.hero-stats-bar{border-top:1px solid rgba(255,255,255,.15);padding-top:1.5rem;margin-top:1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.hero-stats-bar{border-top:1px solid rgba(255,255,255,.15);padding-top:1.5rem;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
 .stat-bar-item{text-align:center;padding:.6rem 0;border-right:1px solid rgba(255,255,255,.15);}
 .stat-bar-item:last-child{border-right:none;}
 .stat-bar-num{font-size:2rem;font-weight:900;color:var(--gold);line-height:1;}
@@ -157,8 +157,14 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
 .hero-card-label{font-size:.72rem;color:rgba(255,255,255,.65);letter-spacing:.04em;text-transform:uppercase;font-weight:700;}
 
 /* TICKER */
-.ticker{background:var(--gold);padding:.65rem 5%;display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--green-dark);font-weight:500;}
-.ticker-label{background:var(--green-dark);color:white;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.22rem .7rem;border-radius:3px;flex-shrink:0;}
+.ticker{background:var(--gold);padding:.65rem 5%;display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--green-dark);font-weight:500;overflow:hidden;max-height:0;transition:max-height .6s ease, padding .6s ease;}
+.ticker.desplegado{max-height:80px;}
+.ticker.vacio{padding:.2rem 5%;}
+.ticker.vacio.desplegado{max-height:12px;}
+.ticker-label{background:var(--green-dark);color:white;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .9rem;border-radius:3px;flex-shrink:0;}
+.ticker-text{font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;}
+.ticker-flecha{margin-left:auto;flex-shrink:0;color:var(--green-dark);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(12,51,22,.12);transition:background .2s,transform .2s;}
+.ticker-flecha:hover{background:rgba(12,51,22,.22);transform:translateX(3px);}
 .ticker-text a{color:var(--green-dark);font-weight:700;text-decoration:underline;}
 
 /* SECTION */
@@ -407,6 +413,18 @@ footer{background:white;color:var(--stone);}
   </div>
 </nav>
 
+<!-- TICKER (aviso urgente) -->
+<div class="ticker vacio" id="ticker">
+  <span class="ticker-label" id="ticker-label" style="display:none;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.3rem;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Aviso
+  </span>
+  <span class="ticker-text" id="ticker-text"></span>
+  <a href="/huelga.html" class="ticker-flecha" id="ticker-flecha" style="display:none;" aria-label="Más información sobre la huelga">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</div>
+
 <!-- HERO -->
 <div class="hero" id="inicio">
   <div class="hero-img-bg"></div>
@@ -450,11 +468,45 @@ footer{background:white;color:var(--stone);}
 
   </div>
 </div>
-<!-- TICKER -->
-<div class="ticker">
-  <span class="ticker-label">Actualidad</span>
-  <span class="ticker-text">CESMCYL consolida su posición como primera fuerza sindical en SACYL · Programa electoral MIR 2026 ya disponible · <a href="#">Consulta las últimas novedades sobre OPEs en Castilla y León</a></span>
-</div>
+
+<script>
+// Carga el aviso urgente (franja dorada). Si está activo, muestra el mensaje;
+// si no, la franja se queda visible pero vacía, solo como línea de color.
+async function cargarAvisoUrgente() {
+  const ticker = document.getElementById('ticker');
+  const label = document.getElementById('ticker-label');
+  const flecha = document.getElementById('ticker-flecha');
+  try {
+    const res = await fetch('/aviso-urgente.json');
+    if (res.ok) {
+      const datos = await res.json();
+      if (datos.activo && datos.texto) {
+        document.getElementById('ticker-text').innerHTML = datos.texto;
+        label.style.display = '';
+        flecha.style.display = 'flex';
+        ticker.classList.remove('vacio');
+        // Se despliega tipo cortina, de arriba a abajo, un instante después de
+        // cargar la página (si se aplica en el mismo frame, el navegador no
+        // anima la transición).
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            ticker.classList.add('desplegado');
+          });
+        });
+      } else {
+        document.getElementById('ticker-text').textContent = '';
+        label.style.display = 'none';
+        flecha.style.display = 'none';
+        ticker.classList.add('vacio');
+        ticker.classList.add('desplegado');
+      }
+    }
+  } catch (e) {
+    console.log('No se pudo cargar el aviso urgente', e);
+  }
+}
+cargarAvisoUrgente();
+</script>
 
 <!-- NOTICIAS -->
 <section id="noticias">

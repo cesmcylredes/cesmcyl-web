@@ -26,8 +26,12 @@
     font-size:.95rem;font-family:inherit;background:var(--off-white);color:var(--green-dark);
   }
   textarea{min-height:140px;resize:vertical;}
-  .toolbar{display:flex;gap:.4rem;margin-bottom:.4rem;}
+  .toolbar{display:flex;gap:.4rem;margin-bottom:.4rem;align-items:center;}
   .fmt-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:6px;background:var(--off-white);color:var(--green-dark);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .fmt-btn.activo{background:var(--green-dark);color:white;border-color:var(--green-dark);}
+  .editor-enriquecido{min-height:80px;padding:.65rem .8rem;border:1px solid var(--border);border-radius:8px;background:var(--off-white);font-size:.95rem;font-family:inherit;outline:none;}
+  .editor-enriquecido:empty::before{content:attr(data-placeholder);color:var(--stone);}
+  .editor-enriquecido:focus{border-color:var(--green-mid);}
   .fmt-btn:hover{background:var(--green-pale);border-color:var(--green-dark);}
   .hint{font-size:.78rem;color:var(--stone);margin-top:.3rem;}
   .checkbox-row{display:flex;align-items:center;gap:.5rem;margin-top:1.1rem;}
@@ -81,20 +85,11 @@
 
     <label>Categoría <small class="req">*</small></label>
     <select id="category">
-      <option>OPE</option>
-      <option>Bolsa</option>
-      <option>CESM</option>
-      <option>Estatuto Marco</option>
-      <option>Fidelización</option>
-      <option>MIR 2026</option>
-      <option>Electoral 2026</option>
-      <option>Estabilización</option>
-      <option>Tutores</option>
-      <option>Inspección Sanitaria</option>
-      <option>Concurso de traslados</option>
-      <option>Novedades normativas estatales</option>
-      <option>Noticias</option>
+      <option value="">Cargando categorías...</option>
     </select>
+    <div id="nuevaCategoriaWrap" style="display:none;margin-top:.6rem;">
+      <input type="text" id="nuevaCategoriaInput" placeholder="Escribe el nombre de la nueva categoría">
+    </div>
 
     <label>Imagen (opcional)</label>
     <input type="file" id="image" accept="image/png,image/jpeg,image/webp">
@@ -132,6 +127,51 @@
   </p>
 
   <div class="card" style="margin-top:2.5rem;">
+    <h2 style="font-size:1.1rem;margin:0 0 .25rem;">⚠️ Aviso urgente (franja dorada de la portada)</h2>
+    <p class="sub" style="margin-bottom:1.2rem;">Úsalo para avisos importantes tipo "Huelga convocada el día X". Se muestra en la franja de arriba de la web, sustituyendo al texto normal.</p>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="avisoActivo">
+      <label for="avisoActivo" style="margin:0;">Mostrar aviso urgente en la portada</label>
+    </div>
+
+    <label>Mensaje del aviso</label>
+    <div class="toolbar" id="avisoToolbar">
+      <button type="button" class="fmt-btn" id="avisoBtnBold" title="Negrita"><b>N</b></button>
+      <button type="button" class="fmt-btn" id="avisoBtnItalic" title="Cursiva"><i>C</i></button>
+      <button type="button" class="fmt-btn" id="avisoBtnUnderline" title="Subrayado"><u>S</u></button>
+      <input type="color" id="avisoColorPicker" value="#0c3316" title="Color del texto seleccionado" style="width:34px;height:34px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;">
+      <select id="avisoTamano" title="Tamaño de letra" style="height:34px;border:1px solid var(--border);border-radius:6px;background:var(--off-white);padding:0 .5rem;font-size:.85rem;">
+        <option value="15px">Normal</option>
+        <option value="19px">Grande</option>
+        <option value="24px">Muy grande</option>
+      </select>
+    </div>
+    <div id="avisoTexto" contenteditable="true" class="editor-enriquecido" data-placeholder="Ej: Huelga convocada para el próximo lunes 20 de julio. Consulta los servicios mínimos aquí."></div>
+    <p class="hint">Selecciona una palabra o frase y usa los botones para darle color, tamaño, negrita, cursiva o subrayado.</p>
+
+    <button id="btnGuardarAviso" style="margin-top:1rem;">Guardar aviso</button>
+    <div class="msg" id="avisoMsg"></div>
+  </div>
+
+  <div class="card" style="margin-top:2.5rem;">
+    <h2 style="font-size:1.1rem;margin:0 0 .25rem;">📄 Página de huelga</h2>
+    <p class="sub" style="margin-bottom:1.2rem;">Este texto aparece arriba del todo en la página de huelga (/huelga.html), a la que se accede desde la flecha del aviso urgente.</p>
+
+    <label>Texto de la página de huelga</label>
+    <div class="toolbar" id="huelgaToolbar">
+      <button type="button" class="fmt-btn" id="huelgaBtnBold" title="Negrita"><b>N</b></button>
+      <button type="button" class="fmt-btn" id="huelgaBtnItalic" title="Cursiva"><i>C</i></button>
+      <button type="button" class="fmt-btn" id="huelgaBtnUnderline" title="Subrayado"><u>S</u></button>
+      <input type="color" id="huelgaColorPicker" value="#0c3316" title="Color del texto seleccionado" style="width:34px;height:34px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer;">
+    </div>
+    <div id="huelgaTexto" contenteditable="true" class="editor-enriquecido" data-placeholder="Ej: Información sobre la huelga convocada, fechas, servicios mínimos, motivos de la convocatoria..." style="min-height:160px;"></div>
+
+    <button id="btnGuardarHuelga" style="margin-top:1rem;">Guardar página de huelga</button>
+    <div class="msg" id="huelgaMsg"></div>
+  </div>
+
+  <div class="card" style="margin-top:2.5rem;">
     <h2 style="font-size:1.1rem;margin:0 0 .25rem;">Noticias publicadas</h2>
     <p class="sub" style="margin-bottom:1.2rem;">Pulsa eliminar para quitar una noticia de la web.</p>
     <div id="listaGestion"><p class="hint">Cargando noticias...</p></div>
@@ -148,6 +188,67 @@ tokenInput.value = localStorage.getItem('cesmcyl-token') || '';
 tokenInput.addEventListener('input', () => {
   localStorage.setItem('cesmcyl-token', tokenInput.value.trim());
 });
+
+// Categorías conocidas de respaldo, por si falla la carga desde GitHub
+// (para que el formulario nunca se quede sin opciones).
+const CATEGORIAS_RESPALDO = ['OPE', 'Bolsa', 'CESM', 'Estatuto Marco', 'Fidelización', 'MIR 2026', 'Electoral 2026', 'Estabilización', 'Tutores', 'Inspección Sanitaria', 'Concurso de traslados', 'Novedades normativas estatales', 'Noticias'];
+
+const categorySelect = document.getElementById('category');
+const nuevaCategoriaWrap = document.getElementById('nuevaCategoriaWrap');
+const nuevaCategoriaInput = document.getElementById('nuevaCategoriaInput');
+
+function pintarOpcionesCategoria(categorias) {
+  categorySelect.innerHTML = '';
+  categorias.forEach(cat => {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    categorySelect.appendChild(opt);
+  });
+  const optNueva = document.createElement('option');
+  optNueva.value = '__nueva__';
+  optNueva.textContent = '➕ Crear categoría nueva…';
+  categorySelect.appendChild(optNueva);
+}
+
+categorySelect.addEventListener('change', () => {
+  if (categorySelect.value === '__nueva__') {
+    nuevaCategoriaWrap.style.display = 'block';
+    nuevaCategoriaInput.focus();
+  } else {
+    nuevaCategoriaWrap.style.display = 'none';
+  }
+});
+
+// Carga las categorías reales a partir de las noticias ya publicadas en
+// GitHub, para que la lista esté siempre al día sin mantenimiento manual.
+async function cargarCategoriasReales() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/noticias?ref=${BRANCH}`);
+    if (!res.ok) throw new Error('No se pudo listar noticias');
+    const listado = await res.json();
+    const archivos = listado
+      .filter(item => item.type === 'file' && item.name.endsWith('.md') && !item.name.startsWith('_'))
+      .map(item => item.name);
+
+    const categoriasEncontradas = new Set();
+    for (const archivo of archivos) {
+      const r = await fetch('/noticias/' + archivo);
+      if (!r.ok) continue;
+      const texto = await r.text();
+      const match = texto.match(/^category:\s*"(.+?)"/m);
+      if (match) categoriasEncontradas.add(match[1]);
+    }
+
+    CATEGORIAS_RESPALDO.forEach(c => categoriasEncontradas.add(c));
+    const categoriasOrdenadas = Array.from(categoriasEncontradas).sort((a, b) => a.localeCompare(b));
+    pintarOpcionesCategoria(categoriasOrdenadas);
+  } catch (e) {
+    console.log('No se pudieron cargar las categorías reales, usando respaldo', e);
+    pintarOpcionesCategoria(CATEGORIAS_RESPALDO);
+  }
+}
+cargarCategoriasReales();
 
 // Mostrar/ocultar campos extra de "Destacado"
 const pinnedCheckbox = document.getElementById('pinned');
@@ -258,7 +359,9 @@ document.getElementById('btnPublicar').addEventListener('click', async () => {
   const token = tokenInput.value.trim();
   const title = document.getElementById('title').value.trim();
   const date = document.getElementById('date').value;
-  const category = document.getElementById('category').value;
+  const category = categorySelect.value === '__nueva__'
+    ? nuevaCategoriaInput.value.trim()
+    : categorySelect.value;
   const body = document.getElementById('body').value.trim();
   const pinned = pinnedCheckbox.checked;
   const description = document.getElementById('description').value.trim();
@@ -267,6 +370,11 @@ document.getElementById('btnPublicar').addEventListener('click', async () => {
   const archivoImagen = imageInput.files[0];
 
   if (!token) { msg.className = 'msg err'; msg.textContent = 'Falta la clave de acceso.'; return; }
+  if (categorySelect.value === '__nueva__' && !category) {
+    msg.className = 'msg err';
+    msg.textContent = 'Escribe el nombre de la nueva categoría.';
+    return;
+  }
   if (!title || !date || !body) { msg.className = 'msg err'; msg.textContent = 'Título, fecha y texto son obligatorios.'; return; }
 
   const slug = slugify(title);
@@ -510,6 +618,7 @@ function cargarNoticiaEnFormulario(archivo, meta) {
   document.getElementById('title').value = meta.title || '';
   document.getElementById('date').value = meta.date || '';
   document.getElementById('category').value = meta.category || 'Noticias';
+  nuevaCategoriaWrap.style.display = 'none';
   document.getElementById('body').value = meta.body || '';
   document.getElementById('description').value = meta.description || '';
   document.getElementById('url').value = meta.url || '';
@@ -590,6 +699,208 @@ async function eliminarNoticia(archivo, titulo, boton) {
 }
 
 cargarListaGestion();
+
+// --- Aviso urgente (franja dorada de la portada) ---
+
+async function cargarAvisoUrgente() {
+  try {
+    const res = await fetch('/aviso-urgente.json');
+    if (res.ok) {
+      const datos = await res.json();
+      document.getElementById('avisoActivo').checked = !!datos.activo;
+      document.getElementById('avisoTexto').innerHTML = datos.texto || '';
+    }
+  } catch (e) {
+    console.log('No se pudo cargar el aviso urgente actual', e);
+  }
+}
+
+// Barra de herramientas del editor de aviso: negrita, cursiva, subrayado,
+// color y tamaño, aplicados sobre el texto que el usuario tenga seleccionado.
+const avisoEditor = document.getElementById('avisoTexto');
+
+function aplicarComandoAviso(comando) {
+  avisoEditor.focus();
+  document.execCommand(comando, false, null);
+}
+document.getElementById('avisoBtnBold').addEventListener('click', () => aplicarComandoAviso('bold'));
+document.getElementById('avisoBtnItalic').addEventListener('click', () => aplicarComandoAviso('italic'));
+document.getElementById('avisoBtnUnderline').addEventListener('click', () => aplicarComandoAviso('underline'));
+
+document.getElementById('avisoColorPicker').addEventListener('input', (e) => {
+  avisoEditor.focus();
+  document.execCommand('foreColor', false, e.target.value);
+});
+
+document.getElementById('avisoTamano').addEventListener('change', (e) => {
+  avisoEditor.focus();
+  const seleccion = window.getSelection();
+  if (!seleccion.rangeCount || seleccion.isCollapsed) return;
+  const span = document.createElement('span');
+  span.style.fontSize = e.target.value;
+  const rango = seleccion.getRangeAt(0);
+  span.appendChild(rango.extractContents());
+  rango.insertNode(span);
+});
+
+document.getElementById('btnGuardarAviso').addEventListener('click', async () => {
+  const token = tokenInput.value.trim();
+  const msg = document.getElementById('avisoMsg');
+  const btn = document.getElementById('btnGuardarAviso');
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  if (!token) { msg.className = 'msg err'; msg.textContent = 'Falta la clave de acceso.'; return; }
+
+  const activo = document.getElementById('avisoActivo').checked;
+  const texto = avisoEditor.innerHTML.trim();
+
+  if (activo && !texto) {
+    msg.className = 'msg err';
+    msg.textContent = 'Escribe el mensaje del aviso antes de activarlo.';
+    return;
+  }
+
+  const contenido = JSON.stringify({ activo, texto }, null, 2);
+  const contenidoBase64 = btoa(unescape(encodeURIComponent(contenido)));
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    let shaActual = undefined;
+    const resInfo = await fetch(`https://api.github.com/repos/${REPO}/contents/aviso-urgente.json?ref=${BRANCH}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (resInfo.ok) {
+      const info = await resInfo.json();
+      shaActual = info.sha;
+    }
+
+    const cuerpo = {
+      message: activo ? 'Activar aviso urgente' : 'Actualizar aviso urgente',
+      content: contenidoBase64,
+      branch: BRANCH
+    };
+    if (shaActual) cuerpo.sha = shaActual;
+
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/aviso-urgente.json`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(cuerpo)
+    });
+
+    if (res.ok) {
+      msg.className = 'msg ok';
+      msg.textContent = '✅ Aviso guardado. Tardará 1-2 minutos en verse en la web.';
+    } else {
+      const data = await res.json().catch(() => ({}));
+      msg.className = 'msg err';
+      msg.textContent = '❌ Error al guardar: ' + (data.message || res.status);
+    }
+  } catch (e) {
+    msg.className = 'msg err';
+    msg.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar aviso';
+  }
+});
+
+cargarAvisoUrgente();
+
+// --- Página de huelga (/huelga.html) ---
+
+async function cargarHuelgaInfo() {
+  try {
+    const res = await fetch('/huelga-info.json');
+    if (res.ok) {
+      const datos = await res.json();
+      document.getElementById('huelgaTexto').innerHTML = datos.texto || '';
+    }
+  } catch (e) {
+    console.log('No se pudo cargar el texto de la página de huelga', e);
+  }
+}
+
+const huelgaEditor = document.getElementById('huelgaTexto');
+function aplicarComandoHuelga(comando) {
+  huelgaEditor.focus();
+  document.execCommand(comando, false, null);
+}
+document.getElementById('huelgaBtnBold').addEventListener('click', () => aplicarComandoHuelga('bold'));
+document.getElementById('huelgaBtnItalic').addEventListener('click', () => aplicarComandoHuelga('italic'));
+document.getElementById('huelgaBtnUnderline').addEventListener('click', () => aplicarComandoHuelga('underline'));
+document.getElementById('huelgaColorPicker').addEventListener('input', (e) => {
+  huelgaEditor.focus();
+  document.execCommand('foreColor', false, e.target.value);
+});
+
+document.getElementById('btnGuardarHuelga').addEventListener('click', async () => {
+  const token = tokenInput.value.trim();
+  const msg = document.getElementById('huelgaMsg');
+  const btn = document.getElementById('btnGuardarHuelga');
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  if (!token) { msg.className = 'msg err'; msg.textContent = 'Falta la clave de acceso.'; return; }
+
+  const texto = huelgaEditor.innerHTML.trim();
+  const contenido = JSON.stringify({ texto }, null, 2);
+  const contenidoBase64 = btoa(unescape(encodeURIComponent(contenido)));
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    let shaActual = undefined;
+    const resInfo = await fetch(`https://api.github.com/repos/${REPO}/contents/huelga-info.json?ref=${BRANCH}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (resInfo.ok) {
+      const info = await resInfo.json();
+      shaActual = info.sha;
+    }
+
+    const cuerpo = {
+      message: 'Actualizar página de huelga',
+      content: contenidoBase64,
+      branch: BRANCH
+    };
+    if (shaActual) cuerpo.sha = shaActual;
+
+    const res = await fetch(`https://api.github.com/repos/${REPO}/contents/huelga-info.json`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(cuerpo)
+    });
+
+    if (res.ok) {
+      msg.className = 'msg ok';
+      msg.textContent = '✅ Página de huelga guardada. Tardará 1-2 minutos en verse en la web.';
+    } else {
+      const data = await res.json().catch(() => ({}));
+      msg.className = 'msg err';
+      msg.textContent = '❌ Error al guardar: ' + (data.message || res.status);
+    }
+  } catch (e) {
+    msg.className = 'msg err';
+    msg.textContent = '❌ ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar página de huelga';
+  }
+});
+
+cargarHuelgaInfo();
 </script>
 </body>
 </html>
