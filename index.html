@@ -485,14 +485,16 @@ async function cargarAvisoUrgente() {
         label.style.display = '';
         flecha.style.display = 'flex';
         ticker.classList.remove('vacio');
-        // Se despliega tipo cortina, de arriba a abajo, un instante después de
-        // cargar la página (si se aplica en el mismo frame, el navegador no
-        // anima la transición).
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            ticker.classList.add('desplegado');
-          });
-        });
+        // Aseguramos que el navegador "pinte" primero el estado cerrado
+        // (altura 0) antes de aplicar el cambio a altura completa, para que
+        // la transición CSS sea visible como una animación de despliegue.
+        ticker.style.transition = 'none';
+        ticker.classList.remove('desplegado');
+        void ticker.offsetHeight; // fuerza al navegador a recalcular el estilo ya
+        setTimeout(() => {
+          ticker.style.transition = '';
+          ticker.classList.add('desplegado');
+        }, 100);
       } else {
         document.getElementById('ticker-text').textContent = '';
         label.style.display = 'none';
