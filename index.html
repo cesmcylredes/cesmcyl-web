@@ -157,15 +157,24 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
 .hero-card-label{font-size:.72rem;color:rgba(255,255,255,.65);letter-spacing:.04em;text-transform:uppercase;font-weight:700;}
 
 /* TICKER */
-.ticker{background:var(--gold);padding:.65rem 5%;display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--green-dark);font-weight:500;overflow:hidden;max-height:0;transition:max-height .6s ease, padding .6s ease;}
-.ticker.desplegado{max-height:80px;}
+.ticker{background:var(--gold);padding:1.1rem 5%;display:flex;align-items:center;gap:1rem;font-size:.82rem;color:var(--green-dark);font-weight:500;overflow:hidden;max-height:0;transition:max-height .6s ease, padding .6s ease;}
+.ticker.desplegado{max-height:300px;}
 .ticker.vacio{padding:.2rem 5%;}
 .ticker.vacio.desplegado{max-height:12px;}
-.ticker-label{background:var(--green-dark);color:white;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .9rem;border-radius:3px;flex-shrink:0;}
-.ticker-text{font-size:.95rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;}
-.ticker-flecha{margin-left:auto;flex-shrink:0;color:var(--green-dark);display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(12,51,22,.12);transition:background .2s,transform .2s;}
-.ticker-flecha:hover{background:rgba(12,51,22,.22);transform:translateX(3px);}
+.ticker-label{background:var(--green-dark);color:white;font-size:.95rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.2rem;border-radius:4px;flex-shrink:0;display:flex;align-items:center;gap:.6rem;}
+.ticker-punto{width:10px;height:10px;border-radius:50%;background:#ff6b5b;display:inline-block;animation:ticker-pulso 1.5s ease-in-out infinite;}
+@keyframes ticker-pulso{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.65);}}
+.ticker-text-wrap{flex:1;min-width:0;overflow:hidden;}
+.ticker-text{font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;display:block;line-height:1.5;}
+@keyframes ticker-linea-entra{from{opacity:0;transform:translateX(-15px);}to{opacity:1;transform:translateX(0);}}
+@keyframes ticker-desliza{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+.ticker-enlace-huelga{flex-shrink:0;display:flex;align-items:center;gap:.7rem;text-decoration:none;cursor:pointer;}
+.ticker-enlace-texto{color:var(--green-dark);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;line-height:1.35;text-align:right;}
+.ticker-flecha{flex-shrink:0;color:white;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:var(--green-dark);animation:ticker-rebote 1.2s ease-in-out infinite;transition:background .2s;}
+.ticker-enlace-huelga:hover .ticker-flecha{background:#0a2a12;animation-play-state:paused;}
+.ticker-flecha svg{width:24px;height:24px;}
 .ticker-text a{color:var(--green-dark);font-weight:700;text-decoration:underline;}
+@keyframes ticker-rebote{0%,100%{transform:translateX(0);}50%{transform:translateX(6px);}}
 
 /* SECTION */
 section{padding:4.5rem 5%;}
@@ -416,12 +425,18 @@ footer{background:white;color:var(--stone);}
 <!-- TICKER (aviso urgente) -->
 <div class="ticker vacio" id="ticker">
   <span class="ticker-label" id="ticker-label" style="display:none;">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:.3rem;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span class="ticker-punto"></span>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:.3rem;"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
     Aviso
   </span>
-  <span class="ticker-text" id="ticker-text"></span>
-  <a href="/huelga.html" class="ticker-flecha" id="ticker-flecha" style="display:none;" aria-label="Más información sobre la huelga">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  <div class="ticker-text-wrap">
+    <span class="ticker-text" id="ticker-text"></span>
+  </div>
+  <a href="/huelga.html" class="ticker-enlace-huelga" id="ticker-flecha" style="display:none;">
+    <span class="ticker-enlace-texto">Toda la información<br>de la huelga</span>
+    <span class="ticker-flecha">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </span>
   </a>
 </div>
 
@@ -481,7 +496,18 @@ async function cargarAvisoUrgente() {
     if (res.ok) {
       const datos = await res.json();
       if (datos.activo && datos.texto) {
-        document.getElementById('ticker-text').innerHTML = datos.texto;
+        const contTexto = document.getElementById('ticker-text');
+        contTexto.innerHTML = '';
+        // Cada línea del mensaje (separada por saltos de línea reales que el
+        // editor del panel guarda como <br> o <div>) entra por separado, con
+        // un pequeño desliz desde la izquierda y un retraso creciente.
+        const lineas = datos.texto.split(/<br\s*\/?>|<\/div>\s*<div>/i).filter(l => l.trim());
+        lineas.forEach((linea, i) => {
+          const div = document.createElement('div');
+          div.innerHTML = linea;
+          div.style.animation = `ticker-linea-entra .5s ease ${i * 0.15}s both`;
+          contTexto.appendChild(div);
+        });
         label.style.display = '';
         flecha.style.display = 'flex';
         ticker.classList.remove('vacio');
