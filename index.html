@@ -165,7 +165,10 @@ nav{background:white;border-bottom:4px solid var(--green-dark);box-shadow:0 2px 
 .ticker-punto{width:10px;height:10px;border-radius:50%;background:#ff6b5b;display:inline-block;animation:ticker-pulso 1.5s ease-in-out infinite;}
 @keyframes ticker-pulso{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.65);}}
 .ticker-text-wrap{flex:1;min-width:0;overflow:hidden;}
-.ticker-text{font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;display:block;line-height:1.5;}
+.ticker-text{font-size:1.3rem;font-weight:700;letter-spacing:.02em;display:block;line-height:1.5;}
+.ticker-detalle{font-size:.85rem;font-weight:500;color:#5c4820;margin-top:.15rem;}
+.ticker-punto-sep{display:inline-block;animation:ticker-sep-pulso 1.8s ease-in-out infinite;}
+@keyframes ticker-sep-pulso{0%,100%{opacity:.4;}50%{opacity:1;}}
 @keyframes ticker-linea-entra{from{opacity:0;transform:translateX(-15px);}to{opacity:1;transform:translateX(0);}}
 @keyframes ticker-desliza{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
 .ticker-enlace-huelga{flex-shrink:0;display:flex;align-items:center;gap:.7rem;text-decoration:none;cursor:pointer;}
@@ -498,16 +501,22 @@ async function cargarAvisoUrgente() {
       if (datos.activo && datos.texto) {
         const contTexto = document.getElementById('ticker-text');
         contTexto.innerHTML = '';
-        // Cada línea del mensaje (separada por saltos de línea reales que el
-        // editor del panel guarda como <br> o <div>) entra por separado, con
-        // un pequeño desliz desde la izquierda y un retraso creciente.
+        // La primera línea escrita en el panel es el mensaje principal.
+        // El resto de líneas (Hora, Lugar...) se agrupan en una segunda
+        // línea más pequeña, separadas por "·", con un ligero movimiento.
         const lineas = datos.texto.split(/<br\s*\/?>|<\/div>\s*<div>/i).filter(l => l.trim());
-        lineas.forEach((linea, i) => {
-          const div = document.createElement('div');
-          div.innerHTML = linea;
-          div.style.animation = `ticker-linea-entra .5s ease ${i * 0.15}s both`;
-          contTexto.appendChild(div);
-        });
+        const principal = document.createElement('div');
+        principal.innerHTML = lineas[0];
+        principal.style.animation = 'ticker-linea-entra .5s ease both';
+        contTexto.appendChild(principal);
+
+        if (lineas.length > 1) {
+          const detalle = document.createElement('div');
+          detalle.className = 'ticker-detalle';
+          detalle.innerHTML = lineas.slice(1).join(' <span class="ticker-punto-sep">·</span> ');
+          detalle.style.animation = 'ticker-linea-entra .5s ease .15s both';
+          contTexto.appendChild(detalle);
+        }
         label.style.display = '';
         flecha.style.display = 'flex';
         ticker.classList.remove('vacio');
